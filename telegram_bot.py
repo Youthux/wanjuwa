@@ -43,8 +43,9 @@ def activity(update: Update, context: CallbackContext):
         context.bot.send_message(
             chat_id=update.effective_chat.id, text='请先设置token')
         return
-    userId = context.args[0]
-    if not userId:
+    try:
+        userId = context.args[0]
+    except IndexError:
         context.bot.send_message(
             chat_id=update.effective_chat.id, text='请输入要查询的用户Id')
 
