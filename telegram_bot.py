@@ -51,6 +51,7 @@ def activity(update: Update, context: CallbackContext):
     try:
         context.bot.send_message(
             chat_id=update.effective_chat.id, text='查询中请稍后...')
+
         title = find_activity(token, userId)
         context.bot.send_message(
             chat_id=update.effective_chat.id, text='{}报名了活动：{}'.format(userId, title))
@@ -59,6 +60,12 @@ def activity(update: Update, context: CallbackContext):
     except TokenInvalid as e:
         context.bot.send_message(
             chat_id=update.effective_chat.id, text='{},请重新输入token'.format(e.msg))
+    except requests.exceptions.ConnectionError as e:
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text='连接超时，请重新查询')
+    except Exception as e:
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text='查询失败'.format(e))
 
 
 start_handler = CommandHandler('start', start)

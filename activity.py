@@ -2,26 +2,41 @@ from urllib import parse
 import requests
 import json
 
+
 class NotFound(Exception):
-    
+
     def __init__(self, msg):
         self.msg = msg
 
+
 class TokenInvalid(Exception):
-    
+
     def __init__(self, msg):
         self.msg = msg
+
 
 def main():
     token = 'eyJhbGciOiJIUzI1NiIbInR5cCI6IkpXVCJ9.eyJ1cGRhdGVVc2VyIjpmYWxzZSwib3BlbmlkIjoib2N0RUI1V0l4WVlNTzFFMkY4M0hTdGRkdjYxWSIsInVzZXJJZCI6MTI3MDIzLCJ1c2VyQ29kZSI6MTAzNjA0MiwidW5pb25pZCI6Im9Vam9nMVA4b1BfS1R6cDBwcEhyMzQ1M2tiaXMiLCJwaG9uZSI6bnVsbCwibmlja25hbWUiOiLog6Hov4UiLCJ1c2VyTmFtZSI6IiIsImdlbmRlciI6MSwic2VydmljZUF2YXQiOiJ1cGxvYWRzXzEvYXZhdGFyLzEwMzZfLzEwMzYwNDIuanBnIiwibGFzdFVwZGF0ZUF2YXQiOiJodHRwczovL3RoaXJkd3gucWxvZ28uY24vbW1vcGVuL3ZpXzMyLzJVQ1FFUXRYcGthU0piREkwblhQR1d2ekhpYzZpY2UxdlczRG9oRDhSVXAwem1UMmwwdWxkQ0RxcFR4eUNjRm9uVXRjaGVoWFhqTXRTTk84TDM2ZGVkQncvMCIsImF2YXRhcnVybCI6Imh0dHBzOi8vd3d3Lndhbmp1d293LmNvbS9zaG9wL3VwbG9hZHNfMS9hdmF0YXIvMTAzNl8vMTAzNjA0Mi5qcGciLCJyZWFsQXJlYSI6IiIsInJlYWxDaXR5IjoiIiwicmVhbFByb3ZpbmNlIjoiIiwicmVhbENvdW50cnkiOiIiLCJjaXR5Q29kZSI6NDQwMzAwLCJhY3RpdmVDbGFzc2lmeSI6MSwiYWN0aXZlUGFyYW1zIjoie1wiY2xhc3NpZnlfMVwiOlt7XCJpZFwiOjEwMDEsXCJuYW1lXCI6XCLnvr3mr5vnkINcIixcImNsYXNzaWZ5XCI6MSxcInNlYXJjaFwiOntcImF0eXBlc0NsYXNzaWZ5XCI6MSxcImF0eXBlc1R5cGVcIjoxMDAxfSxcInhjaGVja1wiOmZhbHNlfV19IiwiYmlydGhkYXkiOiIiLCJ0cmFpdCI6IiIsImhvYmJ5IjoiIiwiYmxhY2tDb3VudCI6MCwiYmVCbGFja0NvdW50Ijo2LCJmYW5zQ291bnQiOjAsImZvbGxvd0NvdW50IjoyLCJmcmllbmRDb3VudCI6MCwiZG9tYWluIjoiaHR0cHM6Ly93d3cud2FuanV3b3cuY29tL3Nob3AvIiwiaWF0IjoxNjYxMDY3NDQ2LCJleHAiOjE2NjEwNzQ2NDZ9.Y2pymlwdOHk56Cqm3uTW3WJPiJAbHByEWcjvZdn6ctc'
     user_id = '123'
     find_activity(token, user_id)
 
+
+activity_msg = '''
+活动：{}
+时间: {}
+人数: {}/{}
+'''
+
+
+def build_msg(activity):
+    return activity_msg.format(activity['actTitle'], activity['dateText'], activity['joinCount'], activity['actTotal'])
+
+
 def find_activity(token, user_id):
     # token = 'eyJhbGciOiJIUzI1NiIbInR5cCI6IkpXVCJ9.eyJ1cGRhdGVVc2VyIjpmYWxzZSwib3BlbmlkIjoib2N0RUI1V0l4WVlNTzFFMkY4M0hTdGRkdjYxWSIsInVzZXJJZCI6MTI3MDIzLCJ1c2VyQ29kZSI6MTAzNjA0MiwidW5pb25pZCI6Im9Vam9nMVA4b1BfS1R6cDBwcEhyMzQ1M2tiaXMiLCJwaG9uZSI6bnVsbCwibmlja25hbWUiOiLog6Hov4UiLCJ1c2VyTmFtZSI6IiIsImdlbmRlciI6MSwic2VydmljZUF2YXQiOiJ1cGxvYWRzXzEvYXZhdGFyLzEwMzZfLzEwMzYwNDIuanBnIiwibGFzdFVwZGF0ZUF2YXQiOiJodHRwczovL3RoaXJkd3gucWxvZ28uY24vbW1vcGVuL3ZpXzMyLzJVQ1FFUXRYcGthU0piREkwblhQR1d2ekhpYzZpY2UxdlczRG9oRDhSVXAwem1UMmwwdWxkQ0RxcFR4eUNjRm9uVXRjaGVoWFhqTXRTTk84TDM2ZGVkQncvMCIsImF2YXRhcnVybCI6Imh0dHBzOi8vd3d3Lndhbmp1d293LmNvbS9zaG9wL3VwbG9hZHNfMS9hdmF0YXIvMTAzNl8vMTAzNjA0Mi5qcGciLCJyZWFsQXJlYSI6IiIsInJlYWxDaXR5IjoiIiwicmVhbFByb3ZpbmNlIjoiIiwicmVhbENvdW50cnkiOiIiLCJjaXR5Q29kZSI6NDQwMzAwLCJhY3RpdmVDbGFzc2lmeSI6MSwiYWN0aXZlUGFyYW1zIjoie1wiY2xhc3NpZnlfMVwiOlt7XCJpZFwiOjEwMDEsXCJuYW1lXCI6XCLnvr3mr5vnkINcIixcImNsYXNzaWZ5XCI6MSxcInNlYXJjaFwiOntcImF0eXBlc0NsYXNzaWZ5XCI6MSxcImF0eXBlc1R5cGVcIjoxMDAxfSxcInhjaGVja1wiOmZhbHNlfV19IiwiYmlydGhkYXkiOiIiLCJ0cmFpdCI6IiIsImhvYmJ5IjoiIiwiYmxhY2tDb3VudCI6MCwiYmVCbGFja0NvdW50Ijo2LCJmYW5zQ291bnQiOjAsImZvbGxvd0NvdW50IjoyLCJmcmllbmRDb3VudCI6MCwiZG9tYWluIjoiaHR0cHM6Ly93d3cud2FuanV3b3cuY29tL3Nob3AvIiwiaWF0IjoxNjYxMDY3NDQ2LCJleHAiOjE2NjEwNzQ2NDZ9.Y2pymlwdOHk56Cqm3uTW3WJPiJAbHByEWcjvZdn6ctc'
 
     # 最近的rows场羽毛球活动
-    rows = 1000
+    rows = 100
     # 深圳地区代码
     city_code = 440300
     # 是否查询到
@@ -30,7 +45,7 @@ def find_activity(token, user_id):
     activities = get_activity_list(token, rows, city_code)
     if activities['code'] == 402:
         raise TokenInvalid(activities['msg'])
-    
+
     for activity in activities["data"]:
         article_id = activity["actId"]
         users = get_user_list(token, article_id, city_code)
@@ -40,9 +55,10 @@ def find_activity(token, user_id):
                 print("查询到该用户报名了活动：" + activity["actTitle"])
                 print(activity)
                 print(user)
-                return activity["actTitle"]
-            
-    raise NotFound('未查到该用户报名任何活动') 
+                return build_msg(activity)
+
+    raise NotFound('未查到该用户报名任何活动')
+
 
 def get_activity_list(token, rows, city_code):
     headers = {
@@ -64,7 +80,8 @@ def get_activity_list(token, rows, city_code):
     get_activity_data = parse.urlencode(get_activity_param)
     get_activity_url = "https://www.wanjuwow.com/shop/active/list2"
 
-    response = requests.post(url=get_activity_url, headers=headers, data=get_activity_data)
+    response = requests.post(url=get_activity_url,
+                             headers=headers, data=get_activity_data)
     result = json.loads(response.text, strict=False)
     return result
 
@@ -80,7 +97,8 @@ def get_user_list(token, article_id, city_code):
     get_user_data = parse.urlencode(get_user_param)
     get_user_url = "https://www.wanjuwow.com/shop/signUp2/userList"
 
-    response = requests.post(url=get_user_url, headers=headers, data=get_user_data)
+    response = requests.post(
+        url=get_user_url, headers=headers, data=get_user_data)
     result = json.loads(response.text, strict=False)
     return result
 
