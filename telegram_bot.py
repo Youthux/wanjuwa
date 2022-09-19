@@ -50,10 +50,15 @@ def activity(update: Update, context: CallbackContext):
             chat_id=update.effective_chat.id, text='请输入要查询的用户Id')
 
     try:
-        context.bot.send_message(
-            chat_id=update.effective_chat.id, text='查询中请稍后...')
+        rows = context.args[1]
+    except IndexError:
+        rows = 100
 
-        title = find_activity(token, userId)
+    try:
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text='搜索最近{}场活动中，请稍后...'.format(rows))
+
+        title = find_activity(token, userId, rows)
         context.bot.send_message(
             chat_id=update.effective_chat.id, text='{}报名了活动：{}'.format(userId, title))
     except NotFound as e:
