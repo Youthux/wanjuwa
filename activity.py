@@ -44,7 +44,6 @@ def find_activity(token, user_id, rows = 100):
     if activities['code'] == 402:
         raise TokenInvalid(activities['msg'])
 
-    acts = []
     for activity in activities["data"]:
         article_id = activity["actId"]
         users = get_user_list(token, article_id, city_code)
@@ -54,9 +53,11 @@ def find_activity(token, user_id, rows = 100):
                 print("查询到该用户报名了活动：" + activity["actTitle"])
                 print(activity)
                 print(user)
-                acts.append(build_msg(activity))
+                flag = True
+                yield build_msg(activity)
 
-    raise NotFound('未查到该用户报名任何活动')
+    if not flag:
+        raise NotFound('未查到该用户报名任何活动')
 
 
 def get_activity_list(token, rows, city_code):
