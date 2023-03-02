@@ -58,6 +58,8 @@ def find_activity(token, user_id, rows = 100):
 
     if not flag:
         raise NotFound('未查到该用户报名任何活动')
+    else:
+        yield '搜索完成'
 
 
 def get_activity_list(token, rows, city_code):
