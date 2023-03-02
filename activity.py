@@ -60,10 +60,10 @@ def find_activity(token, user_id, rows = 100):
             if user_id == str(user_code) or user_id == user['nickname']:
                 logging.info("查询到该用户报名了活动：" + activity["actTitle"])
                 logging.info(activity)
-                logging.info(user)
                 flag = True
                 if not user_details:
                     user_details = True
+                    logging.info(user)
                     yield '用户信息: {}'.format(user)
                 if user["status"] == 1:
                     yield '{}报名了活动：{}'.format(user_id, build_msg(activity))
