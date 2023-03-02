@@ -68,7 +68,7 @@ def find_activity(token, user_id, rows = 100):
                 if user["status"] == 1:
                     yield '{}报名了活动：{}'.format(user_id, build_msg(activity))
                 else:
-                    yield '{}报名了活动：{}(已取消)'.format(user_id, build_msg(activity))
+                    yield '{}报名了活动(已取消)：{}'.format(user_id, build_msg(activity))
 
     if not flag:
         yield '未查到该用户报名任何活动'
