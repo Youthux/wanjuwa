@@ -46,6 +46,8 @@ def find_activity(token, user_id, rows = 100):
     # 是否查询到
     flag = False
 
+    user_details = False
+
     activities = get_activity_list(token, rows, city_code)
     if activities['code'] == 402:
         raise TokenInvalid(activities['msg'])
@@ -60,12 +62,18 @@ def find_activity(token, user_id, rows = 100):
                 logging.info(activity)
                 logging.info(user)
                 flag = True
-                yield build_msg(activity)
+                if not user_details:
+                    user_details = True
+                    yield '用户信息: {}'.format(user)
+                if user["status"] == 1:
+                    yield '{}报名了活动：{}'.format(user_id, build_msg(activity))
+                else:
+                    yield '{}报名了活动：{}(已取消)'.format(user_id, build_msg(activity))
 
     if not flag:
-        raise NotFound('未查到该用户报名任何活动')
+        yield '未查到该用户报名任何活动'
     else:
-        raise SearchFinished('搜索完成')
+        yield '搜索完成'
 
 
 def get_activity_list(token, rows, city_code):

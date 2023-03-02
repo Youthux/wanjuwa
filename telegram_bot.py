@@ -58,10 +58,7 @@ def activity(update: Update, context: CallbackContext):
 
         title = find_activity(token, userId, rows)
         for t in title:
-            context.bot.send_message(
-            chat_id=update.effective_chat.id, text='{}报名了活动：{}'.format(userId, t))
-    except NotFound or SearchFinished as e:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=e.msg)
+            context.bot.send_message(chat_id=update.effective_chat.id, text=t)
     except TokenInvalid as e:
         context.bot.send_message(
             chat_id=update.effective_chat.id, text='{},请重新输入token'.format(e.msg))
