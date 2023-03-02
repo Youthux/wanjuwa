@@ -1,7 +1,9 @@
 from urllib import parse
 import requests
 import json
-
+import logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
 
 class NotFound(Exception):
 
@@ -50,9 +52,9 @@ def find_activity(token, user_id, rows = 100):
         for user in users["data"]["signUps"]:
             user_code = user["userCode"]
             if user_id == str(user_code) or user_id == user['nickname']:
-                print("查询到该用户报名了活动：" + activity["actTitle"])
-                print(activity)
-                print(user)
+                logging.info("查询到该用户报名了活动：" + activity["actTitle"])
+                logging.info(activity)
+                logging.info(user)
                 flag = True
                 yield build_msg(activity)
 
