@@ -60,7 +60,7 @@ def activity(update: Update, context: CallbackContext):
         for t in title:
             context.bot.send_message(
             chat_id=update.effective_chat.id, text='{}报名了活动：{}'.format(userId, t))
-    except NotFound as e:
+    except NotFound or SearchFinished as e:
         context.bot.send_message(chat_id=update.effective_chat.id, text=e.msg)
     except TokenInvalid as e:
         context.bot.send_message(
