@@ -1,5 +1,3 @@
-from ast import Call
-from sympy import im
 from telegram.ext import Updater
 from telegram import Update
 from config import token
@@ -50,14 +48,17 @@ def activity(update: Update, context: CallbackContext):
             chat_id=update.effective_chat.id, text='请输入要查询的用户Id')
 
     try:
-        context.bot.send_message(
-            chat_id=update.effective_chat.id, text='查询中请稍后...')
+        rows = context.args[1]
+    except IndexError:
+        rows = 100
 
-        title = find_activity(token, userId)
+    try:
         context.bot.send_message(
-            chat_id=update.effective_chat.id, text='{}报名了活动：{}'.format(userId, title))
-    except NotFound as e:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=e.msg)
+            chat_id=update.effective_chat.id, text='搜索最近{}场活动中，请稍后...'.format(rows))
+
+        title = find_activity(token, userId, rows)
+        for t in title:
+            context.bot.send_message(chat_id=update.effective_chat.id, text=t)
     except TokenInvalid as e:
         context.bot.send_message(
             chat_id=update.effective_chat.id, text='{},请重新输入token'.format(e.msg))
