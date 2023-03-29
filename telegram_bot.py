@@ -46,7 +46,7 @@ def activity(update: Update, context: CallbackContext):
     except IndexError:
         context.bot.send_message(
             chat_id=update.effective_chat.id, text='请输入要查询的用户Id')
-
+        return
     try:
         rows = context.args[1]
     except IndexError:
