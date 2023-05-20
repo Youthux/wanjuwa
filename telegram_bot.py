@@ -88,7 +88,7 @@ if __name__ == '__main__':
         applicationBuilder = applicationBuilder.proxy_url(proxy_url).get_updates_proxy_url(proxy_url)
     application = applicationBuilder.build()
     
-    application.job_queue.run_repeating(callback=heart, interval=60, first=0)
+    application.job_queue.run_repeating(callback=heart, interval=300, first=0)
     
     start_handler = CommandHandler('start', start)
     application.add_handler(start_handler)
