@@ -1,11 +1,7 @@
-from telegram.ext import Updater
 from telegram import Update
-from config import token
-from telegram.ext import CallbackContext
-from telegram.ext import CommandHandler
-from telegram.ext import MessageHandler, filters
+from config import Config
+from telegram.ext import ApplicationBuilder,CommandHandler, MessageHandler, filters, PicklePersistence,CallbackContext
 from activity import *
-from telegram.ext import ApplicationBuilder, CommandHandler
 
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -24,12 +20,13 @@ async def echo(update: Update, context: CallbackContext):
 async def update_token(update: Update, context: CallbackContext):
     logging.info('收到token: %s', context.args[0])
     context.bot_data['token'] = context.args[0]
+    context.bot_data['token_expired'] = False
     await context.bot.send_message(chat_id=update.effective_chat.id, text='更新成功')
 
 
 async def activity(update: Update, context: CallbackContext):
     try:
-        token = context.bot_data['token']
+        token = context.bot_data.get('token')
     except KeyError:
         await context.bot.send_message(
             chat_id=update.effective_chat.id, text='请先设置token')
@@ -62,13 +59,36 @@ async def activity(update: Update, context: CallbackContext):
         await context.bot.send_message(
             chat_id=update.effective_chat.id, text='查询失败'.format(e))
 
+async def heart(context: CallbackContext):
+    admin_id = Config.get('admin_id')
+    if context.bot_data.get('token_expired') == True:
+        return
+    try:
+        token = context.bot_data.get('token')
+        
+        heart_beat(token)
+    except KeyError:
+        context.bot_data['token_expired'] = True
+        await context.bot.send_message(
+            chat_id=admin_id, text='请先设置token')
+    except TokenInvalid:
+        context.bot_data['token_expired'] = True
+        await context.bot.send_message(
+            chat_id=admin_id, text='token失效, 请重新设置token')
+
 
 if __name__ == '__main__':
-    application = ApplicationBuilder().token(token).build()
     
-    REQUEST_KWARGS = {
-        'proxy_url': 'socks5h://127.0.0.1:1080/',
-    }
+    bot_token = Config.get('bot_token')
+    proxy_url = Config.get('proxy_url')
+    
+    persistence = PicklePersistence(filepath='bot.pickle')
+    applicationBuilder = ApplicationBuilder().token(bot_token).persistence(persistence)
+    if proxy_url:
+        applicationBuilder = applicationBuilder.proxy_url(proxy_url).get_updates_proxy_url(proxy_url)
+    application = applicationBuilder.build()
+    
+    application.job_queue.run_repeating(callback=heart, interval=60, first=0)
     
     start_handler = CommandHandler('start', start)
     application.add_handler(start_handler)

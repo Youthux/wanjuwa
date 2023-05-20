@@ -1,0 +1,5 @@
+{
+    "bot_token": "your bot token",
+    "admin_id": "admin user id",
+    "proxy_url": "socks5://127.0.0.1"
+}
